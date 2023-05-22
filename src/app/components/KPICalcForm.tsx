@@ -2,21 +2,24 @@
 import React from "react";
 import { useState } from "react";
 
+import { fetchKpiYearData } from "../api/kpiCalculatorData";
+import { buildKpiYearQuery } from "../api/kpiCalculatorData";
+
 interface FormData {
-  fieldAmount: string;
-  fieldFromYear: number;
-  fieldMonth1: string;
-  fieldToYear: number;
-  fieldMonth2: string;
+  startValue: string;
+  startYear: string;
+  startMonth: string;
+  endYear: string;
+  endMonth: string;
 }
 
 const KPICalcForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    fieldAmount: "",
-    fieldFromYear: 2023,
-    fieldMonth1: "",
-    fieldToYear: 2023,
-    fieldMonth2: "",
+    startValue: "",
+    startYear: "2021",
+    startMonth: "",
+    endYear: "2022",
+    endMonth: "",
   });
 
   const handleFormInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,16 +30,25 @@ const KPICalcForm: React.FC = () => {
     }));
   };
 
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    fetchKpiYearData(
+      buildKpiYearQuery(formData.startYear, formData.endYear)
+    ).then(() => {
+      console.log("Fetched KPI Year");
+    });
+  };
+
   return (
-    //TODO: Refactor form fields into separate component to avoid repeating code.
-    <form>
+    //TODO: Refactor form fields into separate component to avoname repeating code.
+    <form onSubmit={handleSubmit}>
       <p>
         <label>Skriv inn beløp </label>
         <input
           type="text"
-          id="amount"
-          name="fieldAmount"
-          value={formData.fieldAmount}
+          name="startValue"
+          value={formData.startValue}
           onChange={handleFormInput}
           required
         />
@@ -45,18 +57,16 @@ const KPICalcForm: React.FC = () => {
         <label>Fra år (åååå) </label>
         <input
           type="text"
-          id="fromYear"
-          name="fieldFromYear"
-          value={formData.fieldFromYear}
+          name="startYear"
+          value={formData.startYear}
           onChange={handleFormInput}
           required
         />
         <label>Velg måned </label>
         <input
           type="text"
-          id="fromMonth"
-          name="fieldMonth1"
-          value={formData.fieldMonth1}
+          name="startMonth"
+          value={formData.startMonth}
           onChange={handleFormInput}
           required
         />
@@ -65,18 +75,16 @@ const KPICalcForm: React.FC = () => {
         <label>Til år (åååå) </label>
         <input
           type="text"
-          id="fieldToYear"
-          name="toYear"
-          value={formData.fieldToYear}
+          name="endYear"
+          value={formData.endYear}
           onChange={handleFormInput}
           required
         />
         <label>Velg måned </label>
         <input
           type="text"
-          id="toMonth"
-          name="fieldMonth2"
-          value={formData.fieldMonth2}
+          name="endMonth"
+          value={formData.endMonth}
           onChange={handleFormInput}
           required
         />
