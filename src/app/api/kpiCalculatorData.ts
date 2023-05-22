@@ -1,20 +1,33 @@
 const kpiYearDatasetURL = "https://data.ssb.no/api/v0/no/table/08184";
 
-export function buildKpiYearQuery(startValue: string, endValue: string) {
+export function buildKpiQuery(
+  startYear: string,
+  startMonth: string,
+  endYear: string,
+  endMonth: string
+) {
   return {
     query: [
+      {
+        code: "Maaned",
+        selection: {
+          filter: "item",
+          values:
+            startMonth === endMonth ? [startMonth] : [startMonth, endMonth],
+        },
+      },
       {
         code: "ContentsCode",
         selection: {
           filter: "item",
-          values: ["KpiAar"],
+          values: ["KpiIndMnd"],
         },
       },
       {
         code: "Tid",
         selection: {
-          filter: "",
-          values: [startValue, endValue],
+          filter: "item",
+          values: startYear === endYear ? [startYear] : [startYear, endYear],
         },
       },
     ],
@@ -37,43 +50,14 @@ export async function fetchKpiYearData(query: Object) {
 }
 
 const kpiMonthDatasetURL = "https://data.ssb.no/api/v0/no/table/08981";
-const kpiMonthQuery = {
-  query: [
-    {
-      code: "Maaned",
-      selection: {
-        filter: "all",
-        values: ["*"],
-      },
-    },
-    {
-      code: "ContentsCode",
-      selection: {
-        filter: "item",
-        values: ["KpiIndMnd"],
-      },
-    },
-    {
-      code: "Tid",
-      selection: {
-        filter: "all",
-        values: ["*"],
-      },
-    },
-  ],
-  response: {
-    format: "json-stat",
-  },
-};
 
-export async function fetchKpiMonthData() {
+export async function fetchKpiMonthData(query: Object) {
   const res = await fetch(kpiMonthDatasetURL, {
     method: "POST",
     headers: {
-      "Cache-Control": "no-cache",
       Accept: "text/html",
     },
-    body: JSON.stringify(kpiMonthQuery),
+    body: JSON.stringify(query),
   });
 
   return res.json();

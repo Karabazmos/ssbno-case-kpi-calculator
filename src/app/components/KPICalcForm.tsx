@@ -2,8 +2,8 @@
 import React from "react";
 import { useState } from "react";
 
-import { fetchKpiYearData } from "../api/kpiCalculatorData";
-import { buildKpiYearQuery } from "../api/kpiCalculatorData";
+import { fetchKpiMonthData } from "../api/kpiCalculatorData";
+import { buildKpiQuery } from "../api/kpiCalculatorData";
 
 interface FormData {
   startValue: string;
@@ -33,8 +33,13 @@ const KPICalcForm: React.FC = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    fetchKpiYearData(
-      buildKpiYearQuery(formData.startYear, formData.endYear)
+    fetchKpiMonthData(
+      buildKpiQuery(
+        formData.startYear,
+        formData.startMonth,
+        formData.endYear,
+        formData.endMonth
+      )
     ).then(() => {
       console.log("Fetched KPI Year");
     });
