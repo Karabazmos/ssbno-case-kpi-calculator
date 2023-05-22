@@ -1,88 +1,64 @@
-const kpiYearDatasetURL = 'https://data.ssb.no/api/v0/no/table/08184'
-const kpiYearQuery = {
-    "query": [
-        {
-        "code": "ContentsCode",
-        "selection": {
-            "filter": "item",
-            "values": [
-            "KpiAar"
-            ]
-        }
-        },
-        {
-        "code": "Tid",
-        "selection": {
-            "filter": "all",
-            "values": [
-            "*"
-            ]
-        }
-        }
-    ],
-    "response": {
-        "format": "json-stat"
-    }
-}
+const kpiYearDatasetURL = "https://data.ssb.no/api/v0/no/table/08184";
 
-export async function fetchKpiYearData() {
-  const res = await fetch(kpiYearDatasetURL, {
-    method: 'POST',
-    headers: {
-        'Cache-Control': 'no-cache',
-        Accept: 'text/html',
+export function buildKpiQuery(
+  startYear: string,
+  startMonth: string,
+  endYear: string,
+  endMonth: string
+) {
+  return {
+    query: [
+      {
+        code: "Maaned",
+        selection: {
+          filter: "item",
+          values:
+            startMonth === endMonth ? [startMonth] : [startMonth, endMonth],
+        },
+      },
+      {
+        code: "ContentsCode",
+        selection: {
+          filter: "item",
+          values: ["KpiIndMnd"],
+        },
+      },
+      {
+        code: "Tid",
+        selection: {
+          filter: "item",
+          values: startYear === endYear ? [startYear] : [startYear, endYear],
+        },
+      },
+    ],
+    response: {
+      format: "json-stat",
     },
-    body: JSON.stringify(kpiYearQuery)
-})
-
-return res.json()
+  };
 }
 
-const kpiMonthDatasetURL = 'https://data.ssb.no/api/v0/no/table/08981'
-const kpiMonthQuery = {
-    "query": [
-      {
-        "code": "Maaned",
-        "selection": {
-          "filter": "all",
-          "values": [
-            "*"
-          ]
-        }
-      },
-      {
-        "code": "ContentsCode",
-        "selection": {
-          "filter": "item",
-          "values": [
-            "KpiIndMnd"
-          ]
-        }
-      },
-      {
-        "code": "Tid",
-        "selection": {
-          "filter": "all",
-          "values": [
-            "*"
-          ]
-        }
-      }
-    ],
-    "response": {
-      "format": "json-stat"
-    }
+export async function fetchKpiYearData(query: Object) {
+  const res = await fetch(kpiYearDatasetURL, {
+    method: "POST",
+    headers: {
+      Accept: "text/html",
+    },
+    body: JSON.stringify(query),
+  });
+
+  return res.json();
 }
 
-export async function fetchKpiMonthData() {
-    const res = await fetch(kpiMonthDatasetURL, {
-        method: 'POST',
-        headers: {
-            'Cache-Control': 'no-cache',
-            Accept: 'text/html',
-        },
-        body: JSON.stringify(kpiMonthQuery)
-    })
+const kpiMonthDatasetURL = "https://data.ssb.no/api/v0/no/table/08981";
 
-    return res.json()
+export async function fetchKpiMonthData(query: Object) {
+  const res = await fetch(kpiMonthDatasetURL, {
+    method: "POST",
+    headers: {
+      Accept: "text/html",
+    },
+    body: JSON.stringify(query),
+  });
+
+  return res.json();
 }
