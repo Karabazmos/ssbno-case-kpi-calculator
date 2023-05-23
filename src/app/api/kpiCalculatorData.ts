@@ -2,39 +2,63 @@ const kpiYearDatasetURL = "https://data.ssb.no/api/v0/no/table/08184";
 
 export function buildKpiQuery(
   startYear: string,
-  startMonth: string,
+  startMonth: string | undefined,
   endYear: string,
-  endMonth: string
+  endMonth: string | undefined
 ) {
-  return {
-    query: [
-      {
-        code: "Maaned",
-        selection: {
-          filter: "item",
-          values:
-            startMonth === endMonth ? [startMonth] : [startMonth, endMonth],
+  if (startMonth && endMonth) {
+    return {
+      query: [
+        {
+          code: "Maaned",
+          selection: {
+            filter: "item",
+            values:
+              startMonth === endMonth ? [startMonth] : [startMonth, endMonth],
+          },
         },
-      },
-      {
-        code: "ContentsCode",
-        selection: {
-          filter: "item",
-          values: ["KpiIndMnd"],
+        {
+          code: "ContentsCode",
+          selection: {
+            filter: "item",
+            values: ["KpiIndMnd"],
+          },
         },
-      },
-      {
-        code: "Tid",
-        selection: {
-          filter: "item",
-          values: startYear === endYear ? [startYear] : [startYear, endYear],
+        {
+          code: "Tid",
+          selection: {
+            filter: "item",
+            values: startYear === endYear ? [startYear] : [startYear, endYear],
+          },
         },
+      ],
+      response: {
+        format: "json-stat",
       },
-    ],
-    response: {
-      format: "json-stat",
-    },
-  };
+    };
+  } else {
+    return {
+      query: [
+        {
+          code: "ContentsCode",
+          selection: {
+            filter: "item",
+            values: ["KpiAar"],
+          },
+        },
+        {
+          code: "Tid",
+          selection: {
+            filter: "item",
+            values: startYear === endYear ? [startYear] : [startYear, endYear],
+          },
+        },
+      ],
+      response: {
+        format: "json-stat",
+      },
+    };
+  }
 }
 
 export async function fetchKpiYearData(query: Object) {

@@ -2,16 +2,16 @@
 import React from "react";
 import { useState } from "react";
 
-import { fetchKpiMonthData } from "../api/kpiCalculatorData";
+import { fetchKpiMonthData, fetchKpiYearData } from "../api/kpiCalculatorData";
 import { buildKpiQuery } from "../api/kpiCalculatorData";
 import CalculationResult from "./CalculationResult";
 
 interface FormData {
   operand: string;
   startYear: string;
-  startMonth: string;
+  startMonth: string | undefined;
   endYear: string;
-  endMonth: string;
+  endMonth: string | undefined;
 }
 
 interface APIResponse {
@@ -50,19 +50,36 @@ const KPICalcForm: React.FC = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    fetchKpiMonthData(
-      buildKpiQuery(
-        formData.startYear,
-        formData.startMonth,
-        formData.endYear,
-        formData.endMonth
-      )
-    ).then((response: APIResponse) => {
-      setKpiData(() => ({
-        startValue: response.dataset.value[0],
-        endValue: response.dataset.value.at(-1),
-      }));
-    });
+    if (formData.startMonth && formData.endMonth) {
+      fetchKpiMonthData(
+        buildKpiQuery(
+          formData.startYear,
+          formData.startMonth,
+          formData.endYear,
+          formData.endMonth
+        )
+      ).then((response: APIResponse) => {
+        setKpiData(() => ({
+          startValue: response.dataset.value[0],
+          endValue: response.dataset.value.at(-1),
+        }));
+      });
+    } else {
+      fetchKpiYearData(
+        buildKpiQuery(
+          formData.startYear,
+          undefined,
+          formData.endYear,
+          undefined
+        )
+      ).then((response: APIResponse) => {
+        console.log("Fetched KPI year.");
+        setKpiData(() => ({
+          startValue: response.dataset.value[0],
+          endValue: response.dataset.value[1],
+        }));
+      });
+    }
   };
 
   return (
@@ -88,13 +105,12 @@ const KPICalcForm: React.FC = () => {
             onChange={handleFormInput}
             required
           />
-          <label>Velg måned </label>
+          <label> Velg måned (valgfritt) </label>
           <input
             type="text"
             name="startMonth"
             value={formData.startMonth}
             onChange={handleFormInput}
-            required
           />
         </p>
         <p>
@@ -106,13 +122,12 @@ const KPICalcForm: React.FC = () => {
             onChange={handleFormInput}
             required
           />
-          <label>Velg måned </label>
+          <label> Velg måned (valgfritt) </label>
           <input
             type="text"
             name="endMonth"
             value={formData.endMonth}
             onChange={handleFormInput}
-            required
           />
         </p>
         <p>
