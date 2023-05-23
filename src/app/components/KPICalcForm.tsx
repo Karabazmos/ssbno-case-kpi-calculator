@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useState } from "react";
+import { Dropdown } from "@statisticsnorway/ssb-component-library";
 
 import { fetchKpiMonthData, fetchKpiYearData } from "../api/kpiCalculatorData";
 import { buildKpiQuery } from "../api/kpiCalculatorData";
@@ -106,8 +107,7 @@ const KPICalcForm: React.FC = () => {
             required
           />
           <label> Velg måned (valgfritt) </label>
-          <input
-            type="text"
+          <Dropdown
             name="startMonth"
             value={formData.startMonth}
             onChange={handleFormInput}
