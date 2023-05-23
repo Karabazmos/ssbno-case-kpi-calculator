@@ -2,8 +2,9 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 
 interface KPIValues {
-  startValue: number | undefined;
-  endValue: number | undefined;
+  startKpi: number | undefined;
+  endKpi: number | undefined;
+  originalValue: number | undefined;
 }
 
 interface ResultState {
@@ -12,11 +13,15 @@ interface ResultState {
   inflatedValue: number | undefined;
 }
 
-const calculateInflation = (startValue: number, endValue: number) => {
-  const inflationPercentage =
-    (Math.abs(startValue - endValue) * 100) / endValue;
-  const inflatedValue = (startValue * inflationPercentage) / 100;
-  return [inflationPercentage, startValue + inflatedValue];
+const calculateInflation = (
+  startKpi: number,
+  endKpi: number,
+  originalValue: number
+) => {
+  const inflationPercentage = (Math.abs(startKpi - endKpi) * 100) / endKpi;
+  const inflatedValue = (originalValue * inflationPercentage) / 100;
+  console.log(inflatedValue);
+  return [inflationPercentage, originalValue + inflatedValue];
 };
 
 const CalculationResult: React.FC<KPIValues> = (props) => {
@@ -27,10 +32,11 @@ const CalculationResult: React.FC<KPIValues> = (props) => {
   });
 
   useEffect(() => {
-    if (props.startValue && props.endValue) {
+    if (props.startKpi && props.endKpi && props.originalValue) {
       const [inflationPercentage, inflatedValue] = calculateInflation(
-        props.startValue,
-        props.endValue
+        props.startKpi,
+        props.endKpi,
+        props.originalValue
       );
       setResultState(() => ({
         inflationPercentage: inflationPercentage,
@@ -38,7 +44,7 @@ const CalculationResult: React.FC<KPIValues> = (props) => {
         showResult: true,
       }));
     }
-  }, [props.startValue, props.endValue]);
+  }, [props.startKpi, props.endKpi, props.originalValue]);
 
   return (
     <div>

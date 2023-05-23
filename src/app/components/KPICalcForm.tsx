@@ -5,6 +5,7 @@ import { useState } from "react";
 import { fetchKpiMonthData, fetchKpiYearData } from "../api/kpiCalculatorData";
 import { buildKpiQuery } from "../api/kpiCalculatorData";
 import CalculationResult from "./CalculationResult";
+import MonthSelect from "./MonthSelect";
 
 interface FormData {
   operand: string;
@@ -20,9 +21,10 @@ interface APIResponse {
   };
 }
 
-interface KPIData {
-  startValue: number | undefined;
-  endValue: number | undefined;
+interface CalculationVariables {
+  startKpi: number | undefined;
+  endKpi: number | undefined;
+  originalValue: number | undefined;
 }
 
 const KPICalcForm: React.FC = () => {
@@ -34,9 +36,10 @@ const KPICalcForm: React.FC = () => {
     endMonth: "",
   });
 
-  const [kpiData, setKpiData] = useState<KPIData>({
-    startValue: 0,
-    endValue: 0,
+  const [calcVariables, setCalcVariables] = useState<CalculationVariables>({
+    startKpi: 0,
+    endKpi: 0,
+    originalValue: 0,
   });
 
   const handleFormInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,9 +62,10 @@ const KPICalcForm: React.FC = () => {
           formData.endMonth
         )
       ).then((response: APIResponse) => {
-        setKpiData(() => ({
-          startValue: response.dataset.value[0],
-          endValue: response.dataset.value.at(-1),
+        setCalcVariables(() => ({
+          startKpi: response.dataset.value[0],
+          endKpi: response.dataset.value.at(-1),
+          originalValue: parseInt(formData.operand),
         }));
       });
     } else {
@@ -74,9 +78,10 @@ const KPICalcForm: React.FC = () => {
         )
       ).then((response: APIResponse) => {
         console.log("Fetched KPI year.");
-        setKpiData(() => ({
-          startValue: response.dataset.value[0],
-          endValue: response.dataset.value[1],
+        setCalcVariables(() => ({
+          startKpi: response.dataset.value[0],
+          endKpi: response.dataset.value[1],
+          originalValue: parseInt(formData.operand),
         }));
       });
     }
@@ -113,6 +118,7 @@ const KPICalcForm: React.FC = () => {
             onChange={handleFormInput}
           />
         </p>
+
         <p>
           <label>Til år (åååå) </label>
           <input
@@ -134,7 +140,7 @@ const KPICalcForm: React.FC = () => {
           <button type="submit">Se prisendring</button>
         </p>
       </form>
-      <CalculationResult {...kpiData} />
+      <CalculationResult {...calcVariables} />
     </div>
   );
 };
